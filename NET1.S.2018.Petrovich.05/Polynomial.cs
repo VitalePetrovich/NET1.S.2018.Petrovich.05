@@ -115,32 +115,32 @@ namespace NET1.S._2018.Petrovich._05
         /// <summary>
         /// Compare two polynomial.
         /// </summary>
-        /// <param name="pol1">
+        /// <param name="firstPolynomial">
         /// 1st polynomial for comparing.
         /// </param>
-        /// <param name="pol2">
+        /// <param name="secondPolynomial">
         /// 2nd polynomial for comparing.
         /// </param>
         /// <returns>
         /// Bool result.
         /// </returns>
-        public static bool operator ==(Polynomial pol1, Polynomial pol2)
+        public static bool operator ==(Polynomial firstPolynomial, Polynomial secondPolynomial)
         {
-            if (ReferenceEquals(pol1, null) && ReferenceEquals(pol2, null))
+            if (ReferenceEquals(firstPolynomial, null) && ReferenceEquals(secondPolynomial, null))
                 return true;
 
-            if (ReferenceEquals(pol1, null) || ReferenceEquals(pol2, null))
+            if (ReferenceEquals(firstPolynomial, null) || ReferenceEquals(secondPolynomial, null))
                 return false;
 
-            if (ReferenceEquals(pol1, pol2))
+            if (ReferenceEquals(firstPolynomial, secondPolynomial))
                 return true;
 
-            if (pol1.Pow != pol2.Pow)
+            if (firstPolynomial.Pow != secondPolynomial.Pow)
                 return false;
 
-            for (int i = 0; i < pol1.Pow; i++)
+            for (int i = 0; i < firstPolynomial.Pow; i++)
             {
-                if (Math.Abs(pol1.coeffArray[i] - pol2.coeffArray[i]) > COMPARE_PRECISION)
+                if (Math.Abs(firstPolynomial.coeffArray[i] - secondPolynomial.coeffArray[i]) > COMPARE_PRECISION)
                     return false;
             }
 
@@ -150,24 +150,24 @@ namespace NET1.S._2018.Petrovich._05
         /// <summary>
         /// Compare two polynomial.
         /// </summary>
-        /// <param name="pol1">
+        /// <param name="firstPolynomial">
         /// 1st polynomial for comparing.
         /// </param>
-        /// <param name="pol2">
+        /// <param name="secondPolynomial">
         /// 2nd polynomial for comparing.
         /// </param>
         /// <returns>
         /// Bool result.
         /// </returns>
-        public static bool operator !=(Polynomial pol1, Polynomial pol2) => !(pol1 == pol2);
+        public static bool operator !=(Polynomial firstPolynomial, Polynomial secondPolynomial) => !(firstPolynomial == secondPolynomial);
 
         /// <summary>
         /// Calculate sum of two polynomials.
         /// </summary>
-        /// <param name="pol1">
+        /// <param name="firstPolynomial">
         /// 1st polynomial for calculating.
         /// </param>
-        /// <param name="pol2">
+        /// <param name="secondPolynomial">
         /// 2nd polynomial for calculating.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -176,31 +176,31 @@ namespace NET1.S._2018.Petrovich._05
         /// <returns>
         /// Polynomial-result.
         /// </returns>
-        public static Polynomial operator +(Polynomial pol1, Polynomial pol2)
+        public static Polynomial operator +(Polynomial firstPolynomial, Polynomial secondPolynomial)
         {
-            if (pol1 == null)
-                throw new ArgumentNullException(nameof(pol1));
+            if (firstPolynomial == null)
+                throw new ArgumentNullException(nameof(firstPolynomial));
 
-            if (pol2 == null)
-                throw new ArgumentNullException(nameof(pol2));
+            if (secondPolynomial == null)
+                throw new ArgumentNullException(nameof(secondPolynomial));
 
-            bool isPowFirstGreater = pol1.Pow > pol2.Pow;
+            bool isPowFirstGreater = firstPolynomial.Pow > secondPolynomial.Pow;
             double[] tempCoeffArray =
-                isPowFirstGreater?CreateArrayCopy(pol1.coeffArray):CreateArrayCopy(pol2.coeffArray);
+                isPowFirstGreater?CreateArrayCopy(firstPolynomial.coeffArray):CreateArrayCopy(secondPolynomial.coeffArray);
 
             if (isPowFirstGreater)
             {
-                for (int i = 0; i < pol2.coeffArray.Length; i++)
+                for (int i = 0; i < secondPolynomial.coeffArray.Length; i++)
                 {
-                    tempCoeffArray[tempCoeffArray.Length - 1 - i] += pol2.coeffArray[pol2.Pow - i];
+                    tempCoeffArray[tempCoeffArray.Length - 1 - i] += secondPolynomial.coeffArray[secondPolynomial.Pow - i];
                 }
 
                 return new Polynomial(tempCoeffArray);
             }
             
-            for (int i = 0; i < pol1.coeffArray.Length; i++)
+            for (int i = 0; i < firstPolynomial.coeffArray.Length; i++)
             {
-                tempCoeffArray[tempCoeffArray.Length - 1 - i] += pol1.coeffArray[pol1.Pow - i];
+                tempCoeffArray[tempCoeffArray.Length - 1 - i] += firstPolynomial.coeffArray[firstPolynomial.Pow - i];
             }
 
             return new Polynomial(tempCoeffArray);
@@ -210,33 +210,33 @@ namespace NET1.S._2018.Petrovich._05
         /// CLR-equivalent of operator+.
         /// Calculate sum of two polynomials.
         /// </summary>
-        /// <param name="pol1">
+        /// <param name="firstPolynomial">
         /// 1st polynomial.
         /// </param>
-        /// <param name="pol2">
+        /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
         /// <returns>
         /// Polynomial-result.
         /// </returns>
-        public static Polynomial Add(Polynomial pol1, Polynomial pol2) => pol1 + pol2;
+        public static Polynomial Add(Polynomial firstPolynomial, Polynomial secondPolynomial) => firstPolynomial + secondPolynomial;
 
         /// <summary>
         /// Return inverse polynomial.
         /// </summary>
-        /// <param name="pol">
+        /// <param name="polynomial">
         /// Polynomial.
         /// </param>
         /// <returns>
         /// Inverse polynomial.
         /// </returns>
-        public static Polynomial operator -(Polynomial pol)
+        public static Polynomial operator -(Polynomial polynomial)
         {
-            if (pol == null)
-                throw new ArgumentNullException(nameof(pol));
+            if (polynomial == null)
+                throw new ArgumentNullException(nameof(polynomial));
 
-            double[] tempCoeffArray = CreateArrayCopy(pol.coeffArray);
-            for (int i = 0; i < pol.coeffArray.Length; i++)
+            double[] tempCoeffArray = CreateArrayCopy(polynomial.coeffArray);
+            for (int i = 0; i < polynomial.coeffArray.Length; i++)
             {
                 tempCoeffArray[i] *= -1.0;
             }
@@ -247,56 +247,56 @@ namespace NET1.S._2018.Petrovich._05
         /// <summary>
         /// Subtraction of two polynomial.
         /// </summary>
-        /// <param name="pol1">
+        /// <param name="firstPolynomial">
         /// 1st polynomial.
         /// </param>
-        /// <param name="pol2">
+        /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
         /// <returns>
         /// Result of subtraction.
         /// </returns>
-        public static Polynomial operator -(Polynomial pol1, Polynomial pol2) => pol1 + (-pol2);
+        public static Polynomial operator -(Polynomial firstPolynomial, Polynomial secondPolynomial) => firstPolynomial + (-secondPolynomial);
 
         /// <summary>
         /// CLR-equivalent of operator-.
         /// Subtraction of two polynomial.
         /// </summary>
-        /// <param name="pol1">
+        /// <param name="firstPolynomial">
         /// 1st polynomial.
         /// </param>
-        /// <param name="pol2">
+        /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
         /// <returns>
         /// Result of subtraction.
         /// </returns>
-        public static Polynomial Substract(Polynomial pol1, Polynomial pol2) => pol1 - pol2;
+        public static Polynomial Substract(Polynomial firstPolynomial, Polynomial secondPolynomial) => firstPolynomial - secondPolynomial;
 
         /// <summary>
         /// Multiplying of two polynomial.
         /// </summary>
-        /// <param name="pol1">
+        /// <param name="firstPolynomial">
         /// 1st polynomial.
         /// </param>
-        /// <param name="pol2">
+        /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
         /// <returns>
         /// Result of multiplication.
         /// </returns>
-        public static Polynomial operator *(Polynomial pol1, Polynomial pol2)
+        public static Polynomial operator *(Polynomial firstPolynomial, Polynomial secondPolynomial)
         {
-            if (pol1 == null)
-                throw new ArgumentNullException(nameof(pol1));
+            if (firstPolynomial == null)
+                throw new ArgumentNullException(nameof(firstPolynomial));
 
-            if (pol2 == null)
-                throw new ArgumentNullException(nameof(pol2));
+            if (secondPolynomial == null)
+                throw new ArgumentNullException(nameof(secondPolynomial));
 
-            double[] tempCoeffArray = new double[pol1.Pow + pol2.Pow + 1];
-            for (int i = 0; i < pol2.coeffArray.Length; i++)
+            double[] tempCoeffArray = new double[firstPolynomial.Pow + secondPolynomial.Pow + 1];
+            for (int i = 0; i < secondPolynomial.coeffArray.Length; i++)
             {
-                double[] tempArray = (pol1 * pol2.coeffArray[i]).coeffArray;
+                double[] tempArray = (firstPolynomial * secondPolynomial.coeffArray[i]).coeffArray;
 
                 for (int j = 0; j < tempArray.Length; j++)
                 {
@@ -311,21 +311,21 @@ namespace NET1.S._2018.Petrovich._05
         /// CLR-equivalent of operator*.
         /// Multiplying of two polynomial.
         /// </summary>
-        /// <param name="pol1">
+        /// <param name="firstPolynomial">
         /// 1st polynomial.
         /// </param>
-        /// <param name="pol2">
+        /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
         /// <returns>
         /// Result of multiplication.
         /// </returns>
-        public static Polynomial Multiply(Polynomial pol1, Polynomial pol2) => pol1 * pol2;
+        public static Polynomial Multiply(Polynomial firstPolynomial, Polynomial secondPolynomial) => firstPolynomial * secondPolynomial;
 
         /// <summary>
         /// Multiply polynomial by double value.
         /// </summary>
-        /// <param name="pol">
+        /// <param name="polynomial">
         /// Polynomial.
         /// </param>
         /// <param name="value">
@@ -334,14 +334,14 @@ namespace NET1.S._2018.Petrovich._05
         /// <returns>
         /// Result of multiplication.
         /// </returns>
-        public static Polynomial operator *(Polynomial pol, double value)
+        public static Polynomial operator *(Polynomial polynomial, double value)
         {
-            if (pol == null)
-                throw new ArgumentNullException(nameof(pol));
+            if (polynomial == null)
+                throw new ArgumentNullException(nameof(polynomial));
 
-            double[] tempCoeffArray = CreateArrayCopy(pol.coeffArray);
+            double[] tempCoeffArray = CreateArrayCopy(polynomial.coeffArray);
 
-            for (int i = 0; i < pol.coeffArray.Length; i++)
+            for (int i = 0; i < polynomial.coeffArray.Length; i++)
             {
                 tempCoeffArray[i] *= value;
             }
@@ -353,7 +353,7 @@ namespace NET1.S._2018.Petrovich._05
         /// CLR-equivalent of operator*.
         /// Multiply polynomial by double value.
         /// </summary>
-        /// <param name="pol">
+        /// <param name="polynomial">
         /// Polynomial.
         /// </param>
         /// <param name="value">
@@ -362,7 +362,7 @@ namespace NET1.S._2018.Petrovich._05
         /// <returns>
         /// Result of multiplication.
         /// </returns>
-        public static Polynomial Multiply(Polynomial pol, double value) => pol * value;
+        public static Polynomial Multiply(Polynomial polynomial, double value) => polynomial * value;
 
         private static double[] CreateArrayCopy(double[] sourceArray)
         {
