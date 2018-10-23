@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2041
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET1.S.2018.Petrovich.05", "NET1.S.2018.Petrovich.05\NET1.S.2018.Petrovich.05.csproj", "{ADCF06A5-AC4C-4D39-9269-06F1FA815661}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET1.S.2018.Petrovich.05.Test", "NET1.S.2018.Petrovich.05.Test\NET1.S.2018.Petrovich.05.Test.csproj", "{A54A6BDF-1079-4223-A0CE-D746E9E50D79}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ADCF06A5-AC4C-4D39-9269-06F1FA815661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADCF06A5-AC4C-4D39-9269-06F1FA815661}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADCF06A5-AC4C-4D39-9269-06F1FA815661}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADCF06A5-AC4C-4D39-9269-06F1FA815661}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A54A6BDF-1079-4223-A0CE-D746E9E50D79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A54A6BDF-1079-4223-A0CE-D746E9E50D79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A54A6BDF-1079-4223-A0CE-D746E9E50D79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A54A6BDF-1079-4223-A0CE-D746E9E50D79}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FF79DE0A-3FC3-4B7F-9FC7-8144A92E8B1B}
+	EndGlobalSection
+EndGlobal
