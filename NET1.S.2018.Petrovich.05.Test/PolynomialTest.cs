@@ -55,7 +55,7 @@ namespace NET1.S._2018.Petrovich._05.Test
         }
 
         [Test]
-        public void Polynomial_CallCinstructorWithNullRef()
+        public void Polynomial_CallConstructorWithNullRef()
             => Assert.Throws<ArgumentNullException>(() => new Polynomial(null));
 
         [Test]
@@ -63,7 +63,16 @@ namespace NET1.S._2018.Petrovich._05.Test
         {
             Polynomial polynomial = new Polynomial(1d, 2, 3);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => Console.WriteLine(polynomial[4]));
+            Assert.Throws<ArgumentOutOfRangeException>(() => polynomial[4].ToString());
         }
+
+        [Test]
+        public void Polynomial_ICloneableAndIEquatableTest()
+        {
+            Polynomial polynomial = new Polynomial(1d, 2, 3);
+            Polynomial polynomialClone = polynomial.Clone();
+
+            Assert.IsTrue(polynomial.Equals(polynomialClone));
+        }      
     }
 }

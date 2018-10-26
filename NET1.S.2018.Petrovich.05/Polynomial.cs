@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@ namespace NET1.S._2018.Petrovich._05
     /// <summary>
     /// Class for working with polynomials.
     /// </summary>
-    public class Polynomial
+    public class Polynomial : ICloneable, IEquatable<Polynomial>
     {
         private const double COMPARE_PRECISION = 1.0E-24d;
 
@@ -24,6 +23,9 @@ namespace NET1.S._2018.Petrovich._05
         /// Takes coefficients of polynomial.
         /// First coefficient is greatest degree.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if array of params is null.
+        /// </exception>
         public Polynomial(params double[] coeffArray)
         {
             if(coeffArray == null)
@@ -56,61 +58,7 @@ namespace NET1.S._2018.Petrovich._05
             }
         }
 
-        /// <summary>
-        /// Return true if objects are equals. 
-        /// </summary>
-        /// <param name="obj">
-        /// Object for comparing.
-        /// </param>
-        /// <returns>
-        /// Bool result.
-        /// </returns>
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-                return false;
-
-            if (this.GetType() != obj.GetType())
-                return false;
-
-            return this == (Polynomial)obj;
-        }
-
-        /// <summary>
-        /// Return objects HashCode.
-        /// </summary>
-        /// <returns>
-        /// HashCode value.
-        /// </returns>
-        public override int GetHashCode()
-        {
-            int hash = 0;
-
-            for (int i = 0; i < this.coeffArray.Length; i++)
-            {
-                hash += (int)this[i] * hash + Pow;
-            }
-
-            return hash;
-        }
-
-        /// <summary>
-        /// Return string representation of object.
-        /// </summary>
-        /// <returns>
-        /// String representation.
-        /// </returns>
-        public override string ToString()
-        {
-            StringBuilder tempString = new StringBuilder();
-
-            for (int i = 0; i < this.coeffArray.Length; i++)
-            {
-                tempString.Append($"{this[Pow - i]}*x^{Pow - i} + ");
-            }
-
-            return tempString.ToString(0, tempString.Length - 3);
-        }
+        #region Operators
 
         /// <summary>
         /// Compare two polynomial.
@@ -216,21 +164,85 @@ namespace NET1.S._2018.Petrovich._05
         /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if at least one of two arguments is null.
+        /// </exception>
         /// <returns>
         /// Polynomial-result.
         /// </returns>
-        public static Polynomial Add(Polynomial firstPolynomial, Polynomial secondPolynomial) => firstPolynomial + secondPolynomial;
+        public static Polynomial Add(Polynomial firstPolynomial, Polynomial secondPolynomial)
+        {
+            if (firstPolynomial == null)
+                throw new ArgumentNullException(nameof(firstPolynomial));
+
+            if (secondPolynomial == null)
+                throw new ArgumentNullException(nameof(secondPolynomial));
+
+            bool isPowFirstGreater = firstPolynomial.Pow > secondPolynomial.Pow;
+            double[] tempCoeffArray =
+                isPowFirstGreater
+                    ?CreateArrayCopy(firstPolynomial.coeffArray)
+                    :CreateArrayCopy(secondPolynomial.coeffArray);
+
+            if (isPowFirstGreater)
+            {
+                for (int i = 0; i < secondPolynomial.coeffArray.Length; i++)
+                {
+                    tempCoeffArray[tempCoeffArray.Length - 1 - i] +=
+                        secondPolynomial.coeffArray[secondPolynomial.Pow - i];
+                }
+
+                return new Polynomial(tempCoeffArray);
+            }
+
+            for (int i = 0; i < firstPolynomial.coeffArray.Length; i++)
+            {
+                tempCoeffArray[tempCoeffArray.Length - 1 - i] += firstPolynomial.coeffArray[firstPolynomial.Pow - i];
+            }
+
+            return new Polynomial(tempCoeffArray);
+        }
 
         /// <summary>
-        /// Return inverse polynomial.
+        /// Return negate polynomial.
         /// </summary>
         /// <param name="polynomial">
         /// Polynomial.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if argument is null reference.
+        /// </exception>
         /// <returns>
         /// Inverse polynomial.
         /// </returns>
         public static Polynomial operator -(Polynomial polynomial)
+        {
+            if (polynomial == null)
+                throw new ArgumentNullException(nameof(polynomial));
+
+            double[] tempCoeffArray = CreateArrayCopy(polynomial.coeffArray);
+            for (int i = 0; i < polynomial.coeffArray.Length; i++)
+            {
+                tempCoeffArray[i] *= -1.0;
+            }
+
+            return new Polynomial(tempCoeffArray);
+        }
+
+        /// <summary>
+        /// CLR-equivalent of operator-.
+        /// Return negate polynomial.
+        /// </summary>
+        /// <param name="polynomial">
+        /// Polynomial.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if argument is null reference.
+        /// </exception>
+        /// <returns>
+        /// Inverse polynomial.
+        /// </returns>
+        public static Polynomial Negate(Polynomial polynomial)
         {
             if (polynomial == null)
                 throw new ArgumentNullException(nameof(polynomial));
@@ -253,6 +265,9 @@ namespace NET1.S._2018.Petrovich._05
         /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if at least one of two arguments is null.
+        /// </exception>
         /// <returns>
         /// Result of subtraction.
         /// </returns>
@@ -268,10 +283,14 @@ namespace NET1.S._2018.Petrovich._05
         /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if at least one of two arguments is null.
+        /// </exception>
         /// <returns>
         /// Result of subtraction.
         /// </returns>
-        public static Polynomial Substract(Polynomial firstPolynomial, Polynomial secondPolynomial) => firstPolynomial - secondPolynomial;
+        public static Polynomial Subtract(Polynomial firstPolynomial, Polynomial secondPolynomial) =>
+            Add(firstPolynomial, Negate(secondPolynomial));
 
         /// <summary>
         /// Multiplying of two polynomial.
@@ -282,6 +301,9 @@ namespace NET1.S._2018.Petrovich._05
         /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if at least one of two arguments is null.
+        /// </exception>
         /// <returns>
         /// Result of multiplication.
         /// </returns>
@@ -317,10 +339,33 @@ namespace NET1.S._2018.Petrovich._05
         /// <param name="secondPolynomial">
         /// 2nd polynomial.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if at least one of two arguments is null.
+        /// </exception>
         /// <returns>
         /// Result of multiplication.
         /// </returns>
-        public static Polynomial Multiply(Polynomial firstPolynomial, Polynomial secondPolynomial) => firstPolynomial * secondPolynomial;
+        public static Polynomial Multiply(Polynomial firstPolynomial, Polynomial secondPolynomial)
+        {
+            if (firstPolynomial == null)
+                throw new ArgumentNullException(nameof(firstPolynomial));
+
+            if (secondPolynomial == null)
+                throw new ArgumentNullException(nameof(secondPolynomial));
+
+            double[] tempCoeffArray = new double[firstPolynomial.Pow + secondPolynomial.Pow + 1];
+            for (int i = 0; i < secondPolynomial.coeffArray.Length; i++)
+            {
+                double[] tempArray = (firstPolynomial * secondPolynomial.coeffArray[i]).coeffArray;
+
+                for (int j = 0; j < tempArray.Length; j++)
+                {
+                    tempCoeffArray[i + j] += tempArray[j];
+                }
+            }
+
+            return new Polynomial(tempCoeffArray);
+        }
 
         /// <summary>
         /// Multiply polynomial by double value.
@@ -331,6 +376,9 @@ namespace NET1.S._2018.Petrovich._05
         /// <param name="value">
         /// Double value.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if polynomial reference is null.
+        /// </exception>
         /// <returns>
         /// Result of multiplication.
         /// </returns>
@@ -359,10 +407,119 @@ namespace NET1.S._2018.Petrovich._05
         /// <param name="value">
         /// Double value.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Throws if polynomial reference is null.
+        /// </exception>
         /// <returns>
         /// Result of multiplication.
         /// </returns>
-        public static Polynomial Multiply(Polynomial polynomial, double value) => polynomial * value;
+        public static Polynomial Multiply(Polynomial polynomial, double value)
+        {
+            if (polynomial == null)
+                throw new ArgumentNullException(nameof(polynomial));
+
+            double[] tempCoeffArray = CreateArrayCopy(polynomial.coeffArray);
+
+            for (int i = 0; i < polynomial.coeffArray.Length; i++)
+            {
+                tempCoeffArray[i] *= value;
+            }
+
+            return new Polynomial(tempCoeffArray);
+        }
+
+        #endregion
+        
+        #region objects methods
+
+        /// <summary>
+        /// Return true if objects are equals. 
+        /// </summary>
+        /// <param name="obj">
+        /// Object for comparing.
+        /// </param>
+        /// <returns>
+        /// Bool result.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            if (this.GetType() != obj.GetType())
+                return false;
+
+            return this == (Polynomial)obj;
+        }
+
+        /// <summary>
+        /// Return objects HashCode.
+        /// </summary>
+        /// <returns>
+        /// HashCode value.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            int hash = 0;
+
+            for (int i = 0; i < this.coeffArray.Length; i++)
+            {
+                hash += (int)this[i] * hash + Pow;
+            }
+
+            return hash;
+        }
+        
+        /// <summary>
+        /// Return string representation of object.
+        /// </summary>
+        /// <returns>
+        /// String representation.
+        /// </returns>
+        public override string ToString()
+        {
+            StringBuilder tempString = new StringBuilder();
+
+            for (int i = 0; i < this.coeffArray.Length; i++)
+            {
+                tempString.Append($"({this[Pow - i]}) + ");
+            }
+
+            return tempString.ToString(0, tempString.Length - 3);
+        }
+
+        #endregion
+
+        #region Interfase methods
+
+        /// <summary>
+        /// Create clone by interface reference.
+        /// </summary>
+        /// <returns>
+        /// Object reference.
+        /// </returns>
+        object ICloneable.Clone() => this.Clone();
+
+        /// <summary>
+        /// Create clone by class reference.
+        /// </summary>
+        /// <returns>
+        /// Class reference.
+        /// </returns>
+        public Polynomial Clone() => new Polynomial(this.coeffArray);
+
+        /// <summary>
+        /// Compare current polynomial whit other polynomial.
+        /// </summary>
+        /// <param name="other">
+        /// Other polynomial to compare.
+        /// </param>
+        /// <returns>
+        /// Bool result.
+        /// </returns>
+        public bool Equals(Polynomial other) => this == other;
+        
+        #endregion
 
         private static double[] CreateArrayCopy(double[] sourceArray)
         {
