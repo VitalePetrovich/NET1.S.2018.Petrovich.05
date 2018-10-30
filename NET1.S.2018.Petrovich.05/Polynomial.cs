@@ -3,19 +3,33 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace NET1.S._2018.Petrovich._05
 {
     /// <summary>
     /// Class for working with polynomials.
     /// </summary>
-    public class Polynomial : ICloneable, IEquatable<Polynomial>
+    public sealed class Polynomial : ICloneable, IEquatable<Polynomial>
     {
-        private const double COMPARE_PRECISION = 1.0E-24d;
+        private static readonly double COMPARISON_PRECISION;
 
         private readonly double[] coeffArray;
         public int Pow { get; }
-        
+
+        static Polynomial()
+        {
+            try
+            {
+                COMPARISON_PRECISION =
+                    double.Parse(ConfigurationManager.AppSettings["COMPARISON_PRECISION"]);
+            }
+            catch (Exception)
+            {
+                COMPARISON_PRECISION = 1.0E-10;
+            }
+        }
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -31,8 +45,27 @@ namespace NET1.S._2018.Petrovich._05
             if(coeffArray == null)
                 throw new ArgumentNullException(nameof(coeffArray));
 
-            this.coeffArray = coeffArray;
-            Pow = coeffArray.Length - 1;
+            if (coeffArray.Length == 0)
+                throw new ArgumentException(nameof(coeffArray));
+
+            int i;
+            for (i = 0; i < coeffArray.Length; i++)
+            {
+                if(Math.Abs(coeffArray[i]) > COMPARISON_PRECISION)
+                    break;
+            }
+
+            if (i == coeffArray.Length)
+            {
+                this.coeffArray = new[] {0d};
+            }
+            else
+            {
+                this.coeffArray = new double[coeffArray.Length - i];
+                coeffArray.CopyTo(this.coeffArray, i);
+            }
+
+            Pow = this.coeffArray.Length - 1;
         }
 
         /// <summary>
@@ -83,12 +116,12 @@ namespace NET1.S._2018.Petrovich._05
             if (ReferenceEquals(firstPolynomial, secondPolynomial))
                 return true;
 
-            if (firstPolynomial.Pow != secondPolynomial.Pow)
+            if (firstPolynomial.GetHashCode() != secondPolynomial.GetHashCode())
                 return false;
 
             for (int i = 0; i < firstPolynomial.Pow; i++)
             {
-                if (Math.Abs(firstPolynomial.coeffArray[i] - secondPolynomial.coeffArray[i]) > COMPARE_PRECISION)
+                if (Math.Abs(firstPolynomial.coeffArray[i] - secondPolynomial.coeffArray[i]) > COMPARISON_PRECISION)
                     return false;
             }
 
@@ -126,10 +159,10 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public static Polynomial operator +(Polynomial firstPolynomial, Polynomial secondPolynomial)
         {
-            if (firstPolynomial == null)
+            if (ReferenceEquals(firstPolynomial, null))
                 throw new ArgumentNullException(nameof(firstPolynomial));
 
-            if (secondPolynomial == null)
+            if (ReferenceEquals(secondPolynomial, null))
                 throw new ArgumentNullException(nameof(secondPolynomial));
 
             bool isPowFirstGreater = firstPolynomial.Pow > secondPolynomial.Pow;
@@ -172,10 +205,10 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public static Polynomial Add(Polynomial firstPolynomial, Polynomial secondPolynomial)
         {
-            if (firstPolynomial == null)
+            if (ReferenceEquals(firstPolynomial, null))
                 throw new ArgumentNullException(nameof(firstPolynomial));
 
-            if (secondPolynomial == null)
+            if (ReferenceEquals(secondPolynomial, null))
                 throw new ArgumentNullException(nameof(secondPolynomial));
 
             bool isPowFirstGreater = firstPolynomial.Pow > secondPolynomial.Pow;
@@ -217,7 +250,7 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public static Polynomial operator -(Polynomial polynomial)
         {
-            if (polynomial == null)
+            if (ReferenceEquals(polynomial, null))
                 throw new ArgumentNullException(nameof(polynomial));
 
             double[] tempCoeffArray = CreateArrayCopy(polynomial.coeffArray);
@@ -244,7 +277,7 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public static Polynomial Negate(Polynomial polynomial)
         {
-            if (polynomial == null)
+            if (ReferenceEquals(polynomial, null))
                 throw new ArgumentNullException(nameof(polynomial));
 
             double[] tempCoeffArray = CreateArrayCopy(polynomial.coeffArray);
@@ -309,10 +342,10 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public static Polynomial operator *(Polynomial firstPolynomial, Polynomial secondPolynomial)
         {
-            if (firstPolynomial == null)
+            if (ReferenceEquals(firstPolynomial, null))
                 throw new ArgumentNullException(nameof(firstPolynomial));
 
-            if (secondPolynomial == null)
+            if (ReferenceEquals(secondPolynomial, null))
                 throw new ArgumentNullException(nameof(secondPolynomial));
 
             double[] tempCoeffArray = new double[firstPolynomial.Pow + secondPolynomial.Pow + 1];
@@ -347,10 +380,10 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public static Polynomial Multiply(Polynomial firstPolynomial, Polynomial secondPolynomial)
         {
-            if (firstPolynomial == null)
+            if (ReferenceEquals(firstPolynomial, null))
                 throw new ArgumentNullException(nameof(firstPolynomial));
 
-            if (secondPolynomial == null)
+            if (ReferenceEquals(secondPolynomial, null))
                 throw new ArgumentNullException(nameof(secondPolynomial));
 
             double[] tempCoeffArray = new double[firstPolynomial.Pow + secondPolynomial.Pow + 1];
@@ -384,7 +417,7 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public static Polynomial operator *(Polynomial polynomial, double value)
         {
-            if (polynomial == null)
+            if (ReferenceEquals(polynomial, null))
                 throw new ArgumentNullException(nameof(polynomial));
 
             double[] tempCoeffArray = CreateArrayCopy(polynomial.coeffArray);
@@ -415,7 +448,7 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public static Polynomial Multiply(Polynomial polynomial, double value)
         {
-            if (polynomial == null)
+            if (ReferenceEquals(polynomial, null))
                 throw new ArgumentNullException(nameof(polynomial));
 
             double[] tempCoeffArray = CreateArrayCopy(polynomial.coeffArray);
@@ -430,7 +463,7 @@ namespace NET1.S._2018.Petrovich._05
 
         #endregion
         
-        #region objects methods
+        #region Objects methods
 
         /// <summary>
         /// Return true if objects are equals. 
@@ -443,13 +476,13 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj == null)
+            if (ReferenceEquals(obj, null))
                 return false;
 
             if (this.GetType() != obj.GetType())
                 return false;
 
-            return this == (Polynomial)obj;
+            return this.Equals((Polynomial)obj);
         }
 
         /// <summary>
@@ -460,14 +493,7 @@ namespace NET1.S._2018.Petrovich._05
         /// </returns>
         public override int GetHashCode()
         {
-            int hash = 0;
-
-            for (int i = 0; i < this.coeffArray.Length; i++)
-            {
-                hash += (int)this[i] * hash + Pow;
-            }
-
-            return hash;
+            return this.Pow;
         }
         
         /// <summary>
